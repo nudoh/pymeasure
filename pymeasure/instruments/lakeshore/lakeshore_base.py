@@ -43,6 +43,7 @@ class LakeShoreTemperatureChannel(Channel):
         'KRDG? {ch}',
         """Read the temperature in kelvin from a channel."""
     )
+    # celcius command does not work with LS 372 
     celcius = Instrument.measurement(
         'CRDG? {ch}',
         """Read the temperature in celcius from a channel."""
@@ -78,7 +79,7 @@ class LakeShoreTemperatureChannel(Channel):
             if (time() - t) > timeout:
                 raise Exception((
                                     "Timeout occurred after waiting %g seconds for "
-                                    "the LakeShore 331 temperature to reach %g %s."
+                                    "the LakeShore temperature contoller to reach %g %s."
                                 ) % (timeout, target, unit))
             if should_stop():
                 return
@@ -103,10 +104,11 @@ class LakeShoreHeaterChannel(Channel):
         'RANGE? {ch}',
         'RANGE {ch},%i',
         """String property controlling heater range, which can take the
-       values: off, low, medium, and high.""",
+       values: off, 31.6 uA, 100 uA, ...100 mA.""",
         validator=strict_discrete_set,
-        values={'off': 0, 'low': 1, 'medium': 2, 'high': 3},
-        map_values=True)
+        values={'off': 0, '31.6 uA': 1, '100 uA': 2, '316 uA': 3, '1 mA': 4, '3.16 mA': 5, '10 mA': 6, '31.6 mA': 7, '100 mA': 8},
+        map_values=True
+    )
     setpoint = Instrument.control(
         'SETP? {ch}', 'SETP {ch},%f',
         """A floating point property that control the setpoint temperature
